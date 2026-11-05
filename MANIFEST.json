@@ -1,0 +1,88 @@
+{
+  "purpose": "Sanitized source snapshot for GitHub import; no runtime execution or schedule installation.",
+  "source_files": [
+    {
+      "path": "btc_hourly/README.md",
+      "bytes": 718,
+      "sha256": "872d56f64e365cefb064dc82d0811b9dbf07fa3bfe4876b30f9ab47a78d50646"
+    },
+    {
+      "path": "btc_hourly/broker.py",
+      "bytes": 4208,
+      "sha256": "a3743c2ee3ab8fcb8e39f0d80fd16a613be10d5effd5539bf98bc18b6325d43b"
+    },
+    {
+      "path": "btc_hourly/collector/README.md",
+      "bytes": 1036,
+      "sha256": "e514f1194acca426651c936f9163eb798facad8d64d0fa015f854628e7244881"
+    },
+    {
+      "path": "btc_hourly/collector/collector.py",
+      "bytes": 7634,
+      "sha256": "a65811488904364674fcf8b37a5c4f2d2fe51e8acefa0a67ea31eea0fb6f4ae3"
+    },
+    {
+      "path": "btc_hourly/collector/test_collector.py",
+      "bytes": 1503,
+      "sha256": "1c5f31ea36772b77077efae975ba282c251bc2829cbc19d3134cf2f05882cdad"
+    },
+    {
+      "path": "btc_hourly/config.py",
+      "bytes": 1569,
+      "sha256": "199cc1fd3202307b63494ccad7d323cecfe66f3af253d3e46ca36da306f00f8c"
+    },
+    {
+      "path": "btc_hourly/data.py",
+      "bytes": 4848,
+      "sha256": "fa19a7faaabd7451ecd12cd1a814a0ce9bd821583d250b145b4942ebee287164"
+    },
+    {
+      "path": "btc_hourly/db.py",
+      "bytes": 1999,
+      "sha256": "37a822a4f00a0e450a5de83bbc528413eeb041718f11bf8c5bd46e43e4f2cb84"
+    },
+    {
+      "path": "btc_hourly/edge_checks.py",
+      "bytes": 3844,
+      "sha256": "f23ebfb21dd79f449593629f352d399279e150b7f339663b8bcdb811b27cb534"
+    },
+    {
+      "path": "btc_hourly/model.py",
+      "bytes": 2365,
+      "sha256": "c1d367e7df03ee5136cca5b8b064467e3f3875170fa4d74b78fa39586fe435fd"
+    },
+    {
+      "path": "btc_hourly/run.py",
+      "bytes": 9369,
+      "sha256": "5441ec663bf246f3192bb1fb1aa7660871b5efd426d464648ea0d76ceeb2c02a"
+    },
+    {
+      "path": "research_hourly_btc/FINDINGS.md",
+      "bytes": 726,
+      "sha256": "cbc580e15fd302c262dc7c3c429b62e84de946b51e499693b14f0c0d5b282763"
+    }
+  ],
+  "excluded_paths": [
+    "btc_hourly/__pycache__/broker.cpython-313.pyc",
+    "btc_hourly/__pycache__/config.cpython-313.pyc",
+    "btc_hourly/__pycache__/data.cpython-313.pyc",
+    "btc_hourly/__pycache__/db.cpython-313.pyc",
+    "btc_hourly/__pycache__/edge_checks.cpython-313.pyc",
+    "btc_hourly/__pycache__/model.cpython-313.pyc",
+    "btc_hourly/btc_hourly.db",
+    "btc_hourly/collector/collector.lock",
+    "btc_hourly/collector/collector.log",
+    "btc_hourly/collector/collector.pid",
+    "btc_hourly/collector/market_data.db",
+    "btc_hourly/monitor_log.md"
+  ],
+  "additional_exclusions": {
+    "restore_notes/ROUTINES_TO_CREATE.md": "Omitted: stale agent-to-parent restoration instructions, personal name, and unrelated paused Paper Desk routine; not current authoritative schedules."
+  },
+  "scan": {
+    "method": "UTF-8 allowlist plus private-key, provider-token, credential-assignment, email, phone, authenticated-URL regex checks",
+    "findings_redacted": [],
+    "limitations": "Heuristic scan only; no guarantee against unknown secret formats or obfuscated credentials. No code behavior audit, tests, network calls, or runtime verification performed. Research file is a short restored summary with a Page link, not the full research Page. Running source was not modified."
+  },
+  "paper_only_config": "config.py contains LIVE_TRADING = False; copied unchanged."
+}

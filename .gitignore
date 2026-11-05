@@ -1,0 +1,39 @@
+# Credentials and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_ed25519
+credentials.json
+credentials/
+secrets.json
+secrets/
+
+# Databases (paper bot and collector state)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Logs, pid files, and singleton locks
+*.log
+*.log.[0-9]
+*.pid
+*.lock
+monitor_log.md
+
+# Caches and virtualenvs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# OS junk
+.DS_Store
