@@ -6,6 +6,8 @@ Sanitized source for a paper-only Kalshi hourly BTC (`KXBTCD`) bot, a separate r
 
 `LIVE_TRADING = False` in `btc_hourly/config.py`, and the collector sets the same flag. The paper broker raises if the flag is true. This tree has no live order client and no order endpoint. Import checks do not place live or paper trades.
 
+A paper buy debits cash and inserts the trade in one database transaction. Settlement credits a payout and marks the trade settled in one transaction. After settlement, `run.py` compares meta cash with cash reconstructed from the trade rows (`starting cash − all costs + settled payouts`). If those differ by more than $0.01 it prints `LEDGER MISMATCH` and exits 3 before any new paper fill.
+
 `btc_hourly/README.md` still documents local commands, including `python3 run.py --once`. That command fetches public market data and can write paper fills into a local SQLite file. It was not run for this import.
 
 ## Collector
@@ -35,9 +37,10 @@ NFP, CPI, and FOMC skip windows are the hand-maintained `MACRO_EVENTS` lists in 
 | `btc_hourly/` | Paper bot. Python standard library only. |
 | `btc_hourly/collector/` | Read-only 30-minute collector and offline tests. |
 | `research_hourly_btc/FINDINGS.md` | Restored research summary. |
+| `btc_hourly/monitor_log.md` | Edge-monitor changelog, including the 2026-11-05 paper-cash reconciliation. |
 | `MANIFEST.json` | Import checksums and the runtime files left out (databases, logs, pid/lock files). |
 
-Databases, logs, pid files, locks, caches, credential files, and `.env` files are gitignored.
+Databases, process logs, pid files, locks, caches, credential files, and `.env` files are gitignored. `btc_hourly/monitor_log.md` is tracked.
 
 ## Offline test
 

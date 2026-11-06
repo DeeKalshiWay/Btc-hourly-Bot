@@ -63,6 +63,11 @@ def run_once(verbose: bool = True) -> int:
     if verbose and settled:
         print(f"settled {len(settled)} paper trades: {settled}")
 
+    meta_cash, recon_cash = __import__("db").ledger_check()
+    if abs(meta_cash - recon_cash) > 0.01:
+        print(f"LEDGER MISMATCH: meta cash {meta_cash:.2f} vs reconstructed {recon_cash:.2f}; no new paper risk", file=sys.stderr)
+        return 3
+
     if broker.kill_tripped():
         print(f"KILL SWITCH: equity below {config.KILL_EQUITY}; no new paper risk")
         print(_status_text(broker))

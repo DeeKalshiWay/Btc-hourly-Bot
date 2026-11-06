@@ -43,8 +43,9 @@ CREATE TABLE IF NOT EXISTS runs (
 
 
 def connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(config.DB_PATH))
+    conn = sqlite3.connect(str(config.DB_PATH), timeout=30)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout=30000")
     conn.executescript(SCHEMA)
     return conn
 
@@ -55,6 +56,9 @@ def db() -> Iterator[sqlite3.Connection]:
     try:
         yield conn
         conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
     finally:
         conn.close()
 
@@ -87,3 +91,11 @@ def ensure_seeded() -> None:
         set_cash(config.STARTING_CASH)
         set_meta("starting_cash", str(config.STARTING_CASH))
         set_meta("live_trading", "False")
+
+
+def ledger_check() -> tuple[float, float]:
+    """Return (meta_cash, reconstructed_cash) from STARTING_CASH - all costs + settled payouts."""
+    with db() as conn:
+        cost = conn.execute("SELECT COALESCE(SUM(cost),0) FROM trades").fetchone()[0]
+        pay = conn.execute("SELECT COALESCE(SUM(pnl+cost),0) FROM trades WHERE status!='open'").fetchone()[0]
+    return cash(), round(config.STARTING_CASH - cost + pay, 6)

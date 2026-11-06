@@ -24,7 +24,6 @@ secrets/
 *.log.[0-9]
 *.pid
 *.lock
-monitor_log.md
 
 # Caches and virtualenvs
 __pycache__/

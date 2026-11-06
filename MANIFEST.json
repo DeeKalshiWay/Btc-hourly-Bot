@@ -3,13 +3,13 @@
   "source_files": [
     {
       "path": "btc_hourly/README.md",
-      "bytes": 718,
-      "sha256": "872d56f64e365cefb064dc82d0811b9dbf07fa3bfe4876b30f9ab47a78d50646"
+      "bytes": 931,
+      "sha256": "db84034248c57015243519ee973db28c55b04c833e28b0f75ec47cc2ea4788b9"
     },
     {
       "path": "btc_hourly/broker.py",
-      "bytes": 4208,
-      "sha256": "a3743c2ee3ab8fcb8e39f0d80fd16a613be10d5effd5539bf98bc18b6325d43b"
+      "bytes": 5117,
+      "sha256": "cf47040b59291ae8cc3a3f295922ce88317f441d1fa0a83ceed718ba1270c0ce"
     },
     {
       "path": "btc_hourly/collector/README.md",
@@ -38,8 +38,8 @@
     },
     {
       "path": "btc_hourly/db.py",
-      "bytes": 1999,
-      "sha256": "37a822a4f00a0e450a5de83bbc528413eeb041718f11bf8c5bd46e43e4f2cb84"
+      "bytes": 2543,
+      "sha256": "cfe8688a18e97f7b8acc8963655a64e7fa04d007393001738fb954797441c848"
     },
     {
       "path": "btc_hourly/edge_checks.py",
@@ -52,9 +52,14 @@
       "sha256": "c1d367e7df03ee5136cca5b8b064467e3f3875170fa4d74b78fa39586fe435fd"
     },
     {
+      "path": "btc_hourly/monitor_log.md",
+      "bytes": 1215,
+      "sha256": "311578ca783cc44ca68e438ffe199a153b5294cde090fc7ad87d094c15f5506e"
+    },
+    {
       "path": "btc_hourly/run.py",
-      "bytes": 9369,
-      "sha256": "5441ec663bf246f3192bb1fb1aa7660871b5efd426d464648ea0d76ceeb2c02a"
+      "bytes": 9621,
+      "sha256": "20c4d66a96395c31f39cea90709f5cf0f4d53a99dd6126c7c3e9dbb6f43771c8"
     },
     {
       "path": "research_hourly_btc/FINDINGS.md",
@@ -73,8 +78,7 @@
     "btc_hourly/collector/collector.lock",
     "btc_hourly/collector/collector.log",
     "btc_hourly/collector/collector.pid",
-    "btc_hourly/collector/market_data.db",
-    "btc_hourly/monitor_log.md"
+    "btc_hourly/collector/market_data.db"
   ],
   "additional_exclusions": {
     "restore_notes/ROUTINES_TO_CREATE.md": "Omitted: stale agent-to-parent restoration instructions, personal name, and unrelated paused Paper Desk routine; not current authoritative schedules."
@@ -82,7 +86,8 @@
   "scan": {
     "method": "UTF-8 allowlist plus private-key, provider-token, credential-assignment, email, phone, authenticated-URL regex checks",
     "findings_redacted": [],
-    "limitations": "Heuristic scan only; no guarantee against unknown secret formats or obfuscated credentials. No code behavior audit, tests, network calls, or runtime verification performed. Research file is a short restored summary with a Page link, not the full research Page. Running source was not modified."
+    "limitations": "Heuristic scan only; no guarantee against unknown secret formats or obfuscated credentials. Research file is a short restored summary with a Page link, not the full research Page. The 2026-11-06 ledger fix replaced broker.py, db.py, and run.py and added monitor_log.md. config.py and the strategy modules were not modified."
   },
-  "paper_only_config": "config.py contains LIVE_TRADING = False; copied unchanged."
+  "paper_only_config": "config.py contains LIVE_TRADING = False; copied unchanged.",
+  "ledger_fix": "2026-11-06: replaced btc_hourly/broker.py, db.py, and run.py from the paper ledger fix (single-transaction buy and settlement, db.ledger_check, run.py exit 3 before new fills on mismatch). Added btc_hourly/monitor_log.md. LIVE_TRADING unchanged and still False. No live order code."
 }

@@ -55,12 +55,18 @@ class Broker:
         if config.LIVE_TRADING:
             raise RuntimeError("Refusing live order path — LIVE_TRADING must stay False")
         # No real order API exists in this module by design.
-        cash = db.cash()
-        if fill.cost > cash + 1e-9:
-            raise ValueError(f"insufficient paper cash: need {fill.cost:.2f} have {cash:.2f}")
-        db.set_cash(cash - fill.cost)
         ts = datetime.now(PT).isoformat()
+        # Single transaction: cash debit + trade insert are atomic (no nested connections).
         with db.db() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute("SELECT value FROM meta WHERE key='cash'").fetchone()
+            cash = float(row["value"]) if row else config.STARTING_CASH
+            if fill.cost > cash + 1e-9:
+                raise ValueError(f"insufficient paper cash: need {fill.cost:.2f} have {cash:.2f}")
+            conn.execute(
+                "INSERT INTO meta(key,value) VALUES('cash',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+                (f"{cash - fill.cost:.6f}",),
+            )
             conn.execute(
                 """INSERT INTO trades
                 (ts,ticker,side,qty,price,strike,event_ticker,close_time,cost,model_p,market_ask,edge,status)
@@ -86,6 +92,7 @@ class Broker:
         now = datetime.now(PT)
         settled = []
         with db.db() as conn:
+            conn.execute("BEGIN IMMEDIATE")
             opens = conn.execute("SELECT * FROM trades WHERE status='open'").fetchall()
             for r in opens:
                 try:
@@ -109,9 +116,15 @@ class Broker:
                     win = not yes_wins
                 payout = qty * 1.0 if win else 0.0
                 pnl = payout - cost
-                cash = db.cash()
+                # Same connection for cash + trade update (nested db.set_cash locks SQLite).
+                row = conn.execute("SELECT value FROM meta WHERE key='cash'").fetchone()
+                cash = float(row["value"]) if row else config.STARTING_CASH
                 # cash already reduced by cost at entry; add payout
-                db.set_cash(cash + payout)
+                cash = cash + payout
+                conn.execute(
+                    "INSERT INTO meta(key,value) VALUES('cash',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+                    (f"{cash:.6f}",),
+                )
                 conn.execute(
                     "UPDATE trades SET status=?, pnl=?, settled_ts=? WHERE id=?",
                     ("won" if win else "lost", pnl, now.isoformat(), r["id"]),

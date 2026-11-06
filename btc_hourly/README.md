@@ -12,6 +12,8 @@ python3 run.py --status
 python3 run.py --once
 ```
 
+`run.py --once` settles due paper trades first. It then refuses new paper risk (exit 3) when meta cash and reconstructed cash differ by more than $0.01. Buys and settlements each run as one database transaction.
+
 ## Gates (Nov 5 deep dive)
 
 1. `MIN_PRICE = 0.10` — no longshot buys under 10¢
