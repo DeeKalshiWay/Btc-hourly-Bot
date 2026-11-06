@@ -1,0 +1,40 @@
+{
+  "cash": 72.2567,
+  "equity": 988.997,
+  "dayOpenEquity": 1000.0,
+  "day": "2026-11-05",
+  "position": {
+    "side": "short",
+    "qty": 12,
+    "entry": 76410.0,
+    "margin": 916.7403,
+    "productId": "BIT-27NOV26-CDE",
+    "openedAt": "2026-11-06T02:45:16.473014+00:00",
+    "session": "intraday"
+  },
+  "live": false,
+  "started": "2026-11-06T02:45:16.140480+00:00",
+  "upl": 0.0,
+  "last": {
+    "at": "2026-11-06T02:45:16.473014+00:00",
+    "product": "BIT-27NOV26-CDE",
+    "price": 76410.0,
+    "spot": 76008.4,
+    "basis": 0.005284,
+    "session": "intraday",
+    "days": 21.55,
+    "change24h": -0.05719,
+    "tech": {
+      "score": 22,
+      "signal": "short",
+      "trend": "down",
+      "rsi": 32.03464146643449,
+      "pattern": "inside bar",
+      "note": "EMA down RSI 32 inside bar"
+    },
+    "intent": "open",
+    "fee": 11.003,
+    "note": "Open short 12 BIT-27NOV26-CDE",
+    "live": false
+  }
+}
