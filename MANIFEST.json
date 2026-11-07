@@ -2,14 +2,19 @@
   "purpose": "Sanitized source snapshot for GitHub import; no runtime execution or schedule installation.",
   "source_files": [
     {
+      "path": "INTEGRATION.md",
+      "bytes": 9200,
+      "sha256": "16444f278742d16b6596240774ccd284703a5c9d89589c4883f71413914863b0"
+    },
+    {
       "path": "btc_hourly/README.md",
-      "bytes": 931,
-      "sha256": "db84034248c57015243519ee973db28c55b04c833e28b0f75ec47cc2ea4788b9"
+      "bytes": 1679,
+      "sha256": "24df70bb8a344303468733ea6f607a43fd17b54ed176c047456cd9df09b300dc"
     },
     {
       "path": "btc_hourly/broker.py",
-      "bytes": 5117,
-      "sha256": "cf47040b59291ae8cc3a3f295922ce88317f441d1fa0a83ceed718ba1270c0ce"
+      "bytes": 6200,
+      "sha256": "0dc4e6a42c917f24d62bb1834e655291f10798ff97b8436f16dbc3b333c4e201"
     },
     {
       "path": "btc_hourly/collector/README.md",
@@ -38,13 +43,18 @@
     },
     {
       "path": "btc_hourly/db.py",
-      "bytes": 2543,
-      "sha256": "cfe8688a18e97f7b8acc8963655a64e7fa04d007393001738fb954797441c848"
+      "bytes": 3068,
+      "sha256": "9ca074123ea38592cc6bbc7a318354c19f4cc6d82abba14d060be7be6beb2f6f"
     },
     {
       "path": "btc_hourly/edge_checks.py",
       "bytes": 3844,
       "sha256": "f23ebfb21dd79f449593629f352d399279e150b7f339663b8bcdb811b27cb534"
+    },
+    {
+      "path": "btc_hourly/learning.py",
+      "bytes": 45133,
+      "sha256": "f3fe86004b06aa1d8b7819458976a11690563839c66ad30d5761ce52d5bcede5"
     },
     {
       "path": "btc_hourly/model.py",
@@ -53,13 +63,18 @@
     },
     {
       "path": "btc_hourly/monitor_log.md",
-      "bytes": 1215,
-      "sha256": "311578ca783cc44ca68e438ffe199a153b5294cde090fc7ad87d094c15f5506e"
+      "bytes": 1584,
+      "sha256": "02e5e481af002c79a12b844620c2e173b7312c6976c7cbbdf0adaacc9a7b2554"
     },
     {
       "path": "btc_hourly/run.py",
-      "bytes": 9621,
-      "sha256": "20c4d66a96395c31f39cea90709f5cf0f4d53a99dd6126c7c3e9dbb6f43771c8"
+      "bytes": 14637,
+      "sha256": "19f57f680f7f1359eedc92e4062ff08c979a6d61fc24314acefec240ce86c82e"
+    },
+    {
+      "path": "btc_hourly/test_learning.py",
+      "bytes": 26099,
+      "sha256": "7bb5ed167f06f5836a24c315643efca037e256ab704d0c6dff317809a87e0a2e"
     },
     {
       "path": "research_hourly_btc/FINDINGS.md",
@@ -78,7 +93,9 @@
     "btc_hourly/collector/collector.lock",
     "btc_hourly/collector/collector.log",
     "btc_hourly/collector/collector.pid",
-    "btc_hourly/collector/market_data.db"
+    "btc_hourly/collector/market_data.db",
+    "btc_hourly/learning.db",
+    "btc_hourly/learning_artifact.json"
   ],
   "additional_exclusions": {
     "restore_notes/ROUTINES_TO_CREATE.md": "Omitted: stale agent-to-parent restoration instructions, personal name, and unrelated paused Paper Desk routine; not current authoritative schedules."
@@ -86,8 +103,14 @@
   "scan": {
     "method": "UTF-8 allowlist plus private-key, provider-token, credential-assignment, email, phone, authenticated-URL regex checks",
     "findings_redacted": [],
-    "limitations": "Heuristic scan only; no guarantee against unknown secret formats or obfuscated credentials. Research file is a short restored summary with a Page link, not the full research Page. The 2026-11-06 ledger fix replaced broker.py, db.py, and run.py and added monitor_log.md. config.py and the strategy modules were not modified."
+    "limitations": "Heuristic scan only; no guarantee against unknown secret formats or obfuscated credentials. Research file is a short restored summary with a Page link, not the full research Page. The shadow learner does not import the paper book as labels. config.py, edge_checks.py, and the collector were not modified."
   },
   "paper_only_config": "config.py contains LIVE_TRADING = False; copied unchanged.",
-  "ledger_fix": "2026-11-06: replaced btc_hourly/broker.py, db.py, and run.py from the paper ledger fix (single-transaction buy and settlement, db.ledger_check, run.py exit 3 before new fills on mismatch). Added btc_hourly/monitor_log.md. LIVE_TRADING unchanged and still False. No live order code."
+  "ledger_fix": "2026-11-06: replaced btc_hourly/broker.py, db.py, and run.py from the paper ledger fix (single-transaction buy and settlement, db.ledger_check, run.py exit 3 before new fills on mismatch). Added btc_hourly/monitor_log.md. LIVE_TRADING unchanged and still False. No live order code.",
+  "learning_bundle": {
+    "path": "dist/btc_hourly_learning_src.tar.gz",
+    "bytes": 26170,
+    "sha256": "b4a7a18d175e0526dd81a6fa03fb4caa958419dd79c38707b83a975789d9f853",
+    "note": "Portable source for an existing /workspace/btc_hourly runtime. Excludes config, calendars, collector, databases, logs, and credentials."
+  }
 }

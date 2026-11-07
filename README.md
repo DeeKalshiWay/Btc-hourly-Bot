@@ -6,7 +6,9 @@ Sanitized source for a paper-only Kalshi hourly BTC (`KXBTCD`) bot, a separate r
 
 `LIVE_TRADING = False` in `btc_hourly/config.py`, and the collector sets the same flag. The paper broker raises if the flag is true. This tree has no live order client and no order endpoint. Import checks do not place live or paper trades.
 
-A paper buy debits cash and inserts the trade in one database transaction. Settlement credits a payout and marks the trade settled in one transaction. After settlement, `run.py` compares meta cash with cash reconstructed from the trade rows (`starting cash − all costs + settled payouts`). If those differ by more than $0.01 it prints `LEDGER MISMATCH` and exits 3 before any new paper fill.
+A paper buy debits cash and inserts the trade in one database transaction. A paper trade settles only when Kalshi's public market payload is `finalized` with result `yes` or `no`. Spot, `determined`, disputed, and scalar results do not settle it and do not become labels. Settlement still credits the payout and marks that open row in one transaction, and a second call does not pay again. Already settled rows are left as they are. After settlement, `run.py` compares meta cash with cash reconstructed from the trade rows (`starting cash − all costs + settled payouts`). If those differ by more than $0.01 it prints `LEDGER MISMATCH` and exits 3 before any new paper fill.
+
+`btc_hourly/learning.py` is a shadow calibration layer. It stores prediction-time features for filled, shadow, and rejected names, and it refits only from finalized official yes/no outcomes. Cold start abstains. It does not raise stake, loosen `EDGE_BUFFER` or `MIN_PRICE`, or treat a pattern as validated for trading. See `INTEGRATION.md`.
 
 `btc_hourly/README.md` still documents local commands, including `python3 run.py --once`. That command fetches public market data and can write paper fills into a local SQLite file. It was not run for this import.
 
@@ -37,7 +39,11 @@ NFP, CPI, and FOMC skip windows are the hand-maintained `MACRO_EVENTS` lists in 
 | `btc_hourly/` | Paper bot. Python standard library only. |
 | `btc_hourly/collector/` | Read-only 30-minute collector and offline tests. |
 | `research_hourly_btc/FINDINGS.md` | Restored research summary. |
+| `btc_hourly/learning.py` | Shadow calibration. No orders and no risk changes. |
+| `btc_hourly/test_learning.py` | Offline leakage, settlement, cold-start, and gate tests. |
 | `btc_hourly/monitor_log.md` | Edge-monitor changelog, including the 2026-11-05 paper-cash reconciliation. |
+| `INTEGRATION.md` | How to copy the learning layer into an existing local runtime. |
+| `dist/btc_hourly_learning_src.tar.gz` | Portable source bundle for that copy. No databases or credentials. |
 | `MANIFEST.json` | Import checksums and the runtime files left out (databases, logs, pid/lock files). |
 
 Databases, process logs, pid files, locks, caches, credential files, and `.env` files are gitignored. `btc_hourly/monitor_log.md` is tracked.
@@ -48,4 +54,5 @@ Python 3.9+.
 
 ```bash
 python3 btc_hourly/collector/test_collector.py
+python3 btc_hourly/test_learning.py
 ```

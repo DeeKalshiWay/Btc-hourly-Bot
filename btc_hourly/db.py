@@ -29,7 +29,9 @@ CREATE TABLE IF NOT EXISTS trades (
   edge REAL,
   status TEXT NOT NULL DEFAULT 'open',
   pnl REAL,
-  settled_ts TEXT
+  settled_ts TEXT,
+  settlement_source TEXT,
+  official_result TEXT
 );
 CREATE TABLE IF NOT EXISTS runs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,11 +44,21 @@ CREATE TABLE IF NOT EXISTS runs (
 """
 
 
+def _ensure_trade_columns(conn: sqlite3.Connection) -> None:
+    """Add settlement provenance columns without rewriting existing rows."""
+    cols = {row[1] for row in conn.execute("PRAGMA table_info(trades)")}
+    if "settlement_source" not in cols:
+        conn.execute("ALTER TABLE trades ADD COLUMN settlement_source TEXT")
+    if "official_result" not in cols:
+        conn.execute("ALTER TABLE trades ADD COLUMN official_result TEXT")
+
+
 def connect() -> sqlite3.Connection:
     conn = sqlite3.connect(str(config.DB_PATH), timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA busy_timeout=30000")
     conn.executescript(SCHEMA)
+    _ensure_trade_columns(conn)
     return conn
 
 

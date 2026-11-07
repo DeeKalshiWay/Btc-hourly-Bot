@@ -87,14 +87,29 @@ class Broker:
                 ),
             )
 
-    def settle_due(self, spot: float) -> list[dict]:
-        """Settle open trades whose close_time has passed using spot vs strike (YES wins if spot > strike)."""
-        now = datetime.now(PT)
+    def settle_due(self, spot: float, official_results: Optional[dict] = None, now: Optional[datetime] = None) -> list[dict]:
+        """Settle open trades only from a verified official yes/no map.
+
+        `spot` is ignored for the outcome. Callers that still pass only the
+        spot price no longer invent a settlement. Already settled rows are
+        never rewritten, and a missing or non-binary result stays open.
+        Cash moves only when the open-row update matches exactly one trade,
+        so a second call cannot pay the same contract again.
+        """
+        del spot
+        official: dict[str, str] = {}
+        for ticker, value in (official_results or {}).items():
+            if isinstance(value, str) and value.strip().lower() in ("yes", "no"):
+                official[str(ticker)] = value.strip().lower()
+        now = now or datetime.now(PT)
         settled = []
         with db.db() as conn:
             conn.execute("BEGIN IMMEDIATE")
             opens = conn.execute("SELECT * FROM trades WHERE status='open'").fetchall()
             for r in opens:
+                result = official.get(str(r["ticker"]))
+                if result not in ("yes", "no"):
+                    continue
                 try:
                     ct = datetime.fromisoformat(r["close_time"])
                 except Exception:
@@ -104,30 +119,42 @@ class Broker:
                     ct = ct.replace(tzinfo=timezone.utc).astimezone(PT)
                 if ct > now:
                     continue
-                strike = r["strike"]
                 side = r["side"]
                 qty = int(r["qty"])
-                price = float(r["price"])
                 cost = float(r["cost"])
-                yes_wins = strike is not None and spot > float(strike)
-                if side == "YES":
-                    win = yes_wins
-                else:
-                    win = not yes_wins
+                yes_wins = result == "yes"
+                win = yes_wins if side == "YES" else (not yes_wins)
                 payout = qty * 1.0 if win else 0.0
                 pnl = payout - cost
-                # Same connection for cash + trade update (nested db.set_cash locks SQLite).
+                updated = conn.execute(
+                    """UPDATE trades
+                       SET status=?, pnl=?, settled_ts=?, settlement_source=?, official_result=?
+                       WHERE id=? AND status='open'""",
+                    (
+                        "won" if win else "lost",
+                        pnl,
+                        now.isoformat(),
+                        "official_kalshi",
+                        result,
+                        r["id"],
+                    ),
+                )
+                if updated.rowcount != 1:
+                    continue
                 row = conn.execute("SELECT value FROM meta WHERE key='cash'").fetchone()
                 cash = float(row["value"]) if row else config.STARTING_CASH
-                # cash already reduced by cost at entry; add payout
                 cash = cash + payout
                 conn.execute(
                     "INSERT INTO meta(key,value) VALUES('cash',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
                     (f"{cash:.6f}",),
                 )
-                conn.execute(
-                    "UPDATE trades SET status=?, pnl=?, settled_ts=? WHERE id=?",
-                    ("won" if win else "lost", pnl, now.isoformat(), r["id"]),
+                settled.append(
+                    {
+                        "id": r["id"],
+                        "ticker": r["ticker"],
+                        "pnl": pnl,
+                        "win": win,
+                        "settlement_source": "official_kalshi",
+                    }
                 )
-                settled.append({"id": r["id"], "ticker": r["ticker"], "pnl": pnl, "win": win})
         return settled

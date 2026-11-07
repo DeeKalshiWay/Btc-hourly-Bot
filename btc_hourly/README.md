@@ -9,10 +9,15 @@ Paper-only Kalshi hourly BTC (`KXBTCD`) pricer and paper broker.
 ```bash
 cd /workspace/btc_hourly
 python3 run.py --status
+python3 run.py --learn
 python3 run.py --once
 ```
 
-`run.py --once` settles due paper trades first. It then refuses new paper risk (exit 3) when meta cash and reconstructed cash differ by more than $0.01. Buys and settlements each run as one database transaction.
+`run.py --once` settles due paper trades first, then refuses new paper risk (exit 3) when meta cash and reconstructed cash differ by more than $0.01. Buys and settlements each run as one database transaction.
+
+Settlement uses a Kalshi public market only when `status` is `finalized` and `result` is `yes` or `no`. A missing result leaves the trade open. Spot is not a settlement and not a learning label. Rows that are already won or lost are not rewritten.
+
+`run.py --learn` settles from those official results and refreshes the shadow learner. It does not place a new paper bet. `run.py --status` prints the learning JSON from local state and does not fetch. The learner does not change `EDGE_BUFFER`, `MIN_PRICE`, or stake. A local calendar that is longer than this repo's copy should be kept; do not replace `config.py`, `edge_checks.py`, or `collector/` from the learning bundle. The bundle's `INTEGRATION.md` lists the copy steps.
 
 ## Gates (Nov 5 deep dive)
 

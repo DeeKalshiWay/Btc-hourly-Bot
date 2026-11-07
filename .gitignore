@@ -11,13 +11,15 @@ credentials/
 secrets.json
 secrets/
 
-# Databases (paper bot and collector state)
+# Databases (paper bot, collector, and shadow-learning state)
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
 *.sqlite
 *.sqlite3
+learning_artifact.json
+learning_artifact.json.tmp
 
 # Logs, pid files, and singleton locks
 *.log
